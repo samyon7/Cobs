@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "is it prime",
+      "setup": "npm install",
+      "run": "npm test tests/isItPrime.test.js",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "What Time is It",
+      "setup": "npm install",
+      "run": "npm test tests/whatTimeIsIt.test.js",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "When Was it Posted",
+      "setup": "npm install",
+      "run": "npm test tests/whenWasItPosted.test.js",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    },
+    {
+      "name": "Who is It",
+      "setup": "npm install",
+      "run": "npm test tests/whoIstIt.test.js",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 1
+    }
+  ]
+}

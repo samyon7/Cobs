@@ -1,0 +1,48 @@
+name: GitHub Classroom Workflow
+
+on: [push]
+
+jobs:
+  build:
+    name: Autograding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: education/autograding@v1
+        id: autograder
+        continue-on-error: true
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%d-%m-%Y')"
+      - name: Get current time
+        id: time
+        run: echo "::set-output name=time::$(date +'%H:%M:%S')"
+
+      - id: "append_points"
+        uses: jroehl/gsheet.action@v1.1.0
+        with:
+          spreadsheetId: 1HFims7REJXElNhGxVP8ta6KQr8mUFliA_ug57Ob9D48
+          commands: |
+            [
+              { 
+                "command": "appendData", 
+                "args": { 
+                  "worksheetTitle": "grades",
+                  "minCol": 1, 
+                  "data": [[
+                    "${{ github.actor }}", 
+                    "${{ github.repository }}", 
+                    "${{ steps.autograder.outputs.Points }}",
+                    "${{ steps.date.outputs.date }}",
+                    "${{ steps.time.outputs.time }}"
+                  ]] 
+                }
+              }
+            ]
+        env:
+          GSHEET_CLIENT_EMAIL: "admissions@moec-admissions.iam.gserviceaccount.com"
+          GSHEET_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC8f8U2ILCZZUmj\ncIrLc4M7bIVBHbDCekZ4oSDG5/ogtAEGzZUsisxPfrtkHUQS5lBiVTgMBXnpsF9d\nD6HFz2rPNpezgubi83IQx/3SOdI/PuFSZ96ijklnENSlmKw0ax7nGu+4xv3MLXWP\nfvotgurZxFcm+g8xBptLQOf5R99KrLQAN/UHSQjPHtOxNyL9uA6D5n/5Tvhe8sXN\ng36ks0Pug6XWV9YJIhzXt7PmqNivKlRB6HlEdthupyJAFc1kvBg7K6pqpkJyhYVe\nM432F6cNqK2y9zHmwH9/UftHh7237da/yhqOlZ8+IRf4SoFsSacMZenRkccgxHab\nhcoq518XAgMBAAECggEABwCOEGEtfj1De4VKOp2LYfE5j/4s20SUipWdtJXYdk+J\nfDm10WZEia1xA5qMtVEF6mk1AElRyosJN9lFTqZSVuk1wG7b6dFWSuZK+Py54SyS\nTS/bltlHQ8Ndytr9hqL2DmqzPf9yXRvRMqfqXjdvRvCitily2AThTu3V0C5JzqnE\nWKP/wli6rCXtsOcf199/goEKAn4QzPqDMbAXudj4HEoV1eYiHVaZO/2naZW4zp4Z\nZ+BYvgsUjr/4RybWEJwooo423Sv/vDS3LAWyTYwNcTz78vKT6otALB8jupMUo/Ca\n69AvHdHTtAumIHYw2XsNzrwwE/o1RxSidBvEaoXTwQKBgQDq05lfbLf24q1U1o1y\nIMv/Dpjob4xPe2KqS+o/xopn8NofenT9OAOzy09oW2WsjRnhioHJHtg4Ok/eKN6e\nYuzbcxqVfOTTP0zYzsGmkemTI+8eeoc3usu7sDW4cr8IDo1pSB8SNM9YA9JaDw+P\nK4qf80+9lcHdxaCOJaJXiduyQQKBgQDNftB9sn2dRFek8CJHITysj0Vw4+xFMoBe\nXSHZ32akcRoUh70zM10gsT/s/AbuDk4RB6kUvUWZ9zC5RfHqjok7IQszl+kxWOy2\nXgkwFJfCfg3E21HdWK6ajJEoGWrw94iciG3kcJlf5mjNW3KlUF8zfuCQN/8ZbyED\nP949cVULVwKBgEk8Os4G4wzNPw+BZlWcouJl1AxRlanIKkpAKMtBCTNHa0976nZ6\nfLUbCCXcs0XwL40mnDl0NCy9CuGXT26IHaSHLlhGvjqfuEC5oq1nPjhUcaPIxNj9\nmcJsPyTKLIe/uhyGkKIl9DBX6MeLgOe+xZoC0PCofvDCTMNoO0wfw3PBAoGAXrGp\nccLmj6oGmULvCMgQJZR/812Uau6yqMlR6AxCSFS2J+/FB+sLZx1Gz/XzW4/L+Z0G\nFUCC6kg2c6n/qI62PkEj4EqIcuz/Z6o9oaJbrIxZ2/UU7GMJUr6jxU6xMQlgMoHL\n4hDhHIgYk0kos3Ut6ZT19n9XVmkXVWABEV9ASVECgYAg5xta8WhbwnsayPXCymDg\nwHXBM4TqIWb9QNp/EU797tEyWqFz1mBLtO5h7QNfFNSGlIIQO55H4bBFVXl7nbKN\nx6v+tNsX5LcgDAbfCCqMjUwOgHonrshDSpqBLDAZ5FXkO7oKQpG1JguY7sTAWkV4\nZs0EWElxXfI4pNfPUJ+H8g==\n-----END PRIVATE KEY-----\n"
+      - name: Results
+        env:
+          RESULTS: ${{ steps.append_points.outputs.results }}
+        run: echo "$RESULTS" | jq
